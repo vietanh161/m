@@ -11,13 +11,36 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useForm } from 'react-hook-form';
+import {createTheme, ThemeProvider} from '@mui/material/styles';
+import {useForm, Controller} from 'react-hook-form';
 
 const theme = createTheme();
 
+const VALIDATION = {
+    firstName: {
+        required: "Trường Này Không Được Để Trống",
+        minLength: {
+            value: 3,
+            message: "Ít Nhất là 3 ký tự",
+        }
+    }
+}
+
 export default function SignUp() {
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const {
+        register,
+        control,
+        handleSubmit,
+        formState: {errors}
+    } = useForm({
+        defaultValues: {
+            firstName: '',
+            lastName: '',
+            email: '',
+            password: '',
+        }
+    });
+
     const onSubmit = data => alert('Đăng Nhập Thành Công');
 
     return (
@@ -32,31 +55,31 @@ export default function SignUp() {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                        <LockOutlinedIcon />
+                    <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
+                        <LockOutlinedIcon/>
                     </Avatar>
                     <Typography component="h1" variant="h5">
                         Sign up
                     </Typography>
-                    <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
+                    <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{mt: 3}}>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
-                                <TextField
-                                    autoComplete="given-name"
-                                    name='firstName'
-                                    required
-                                    fullWidth
-                                    id="firstName"
-                                    label="First Name"
-                                    autoFocus
-                                    {...register("firstName", {
-                                        required: "Trường Này Không Được Để Trống", minLength: {
-                                            value: 3,
-                                            message: "Ít Nhất là 3 ký tự",
-                                        }
-                                    })}
+                                <Controller
+                                    name="firstName"
+                                    control={control}
+                                    rules={VALIDATION.firstName}
+                                    render={({field}) => <TextField
+                                        autoComplete="given-name"
+                                        required
+                                        fullWidth
+                                        id="firstName"
+                                        label="First Name"
+                                        autoFocus
+                                        error={!!errors?.firstName}
+                                        helperText={errors?.firstName?.message}
+                                        {...field}
+                                    />}
                                 />
-                                {errors.firstName && <span>{errors.firstName.message}</span>}
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <TextField
@@ -102,13 +125,13 @@ export default function SignUp() {
                                     type="password"
                                     id="password"
                                     autoComplete="new-password"
-                                    {...register("password", { required: "Trường Này Không Được Để Trống" })}
+                                    {...register("password", {required: "Trường Này Không Được Để Trống"})}
                                 />
                                 {errors.password && <span>{errors.password.message}</span>}
                             </Grid>
                             <Grid item xs={12}>
                                 <FormControlLabel
-                                    control={<Checkbox value="allowExtraEmails" color="primary" />}
+                                    control={<Checkbox value="allowExtraEmails" color="primary"/>}
                                     label="I want to receive inspiration, marketing promotions and updates via email."
 
                                 />
@@ -118,7 +141,7 @@ export default function SignUp() {
                             type="submit"
                             fullWidth
                             variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
+                            sx={{mt: 3, mb: 2}}
                         >
                             Sign Up
                         </Button>
